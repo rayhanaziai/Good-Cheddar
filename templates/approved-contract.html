@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div id='approved-form' class="transaction-form">
+    <div class="terms">
+        <h1>Your contract</h1><br> 
+
+        The 'payer' will agree to pay the amount agreed below to Easy Pay who will hold the funds until the agreed date below, on which date the funds will be transferred to the 'seller'. <br><br>
+
+        However, on the occasion  where the following occurs, the funds will be returned to the 'payer' as long as Easy Pay has been notified 24 hours before the agreed payment date below.<br><br>
+
+        (a) the Host of the Accommodation (i) cancels a reservation shortly before the scheduled start of the reservation, or (ii) fails to provide the Guest with the reasonable ability to access the Accommodation.<br><br>
+        (b) the description of the Accommodation in the Listing is materially inaccurate with respect to: <br>
+        (i) the size of the Accommodation, 
+        (ii) whether the reservation for the Accommodation is for a private room or shared room, and whether another party, including the Host, is staying at the Accommodation during the reservation, 
+        (iii) special amenities or features represented in the Listing are not provided or do not function, such as decks, pools, hot tubs, bathrooms, kitchen, and electrical, heating or air condition systems, or 
+        (iv) the physical location of the Accommodation (proximity). <br><br>
+        (c) at the start of the Guest’s reservation, the Accommodation: (i) is not generally clean and sanitary (ii) contains safety or health hazards that would be reasonably expected to adversely affect the Guest’s stay at the Accommodation in Easy Pay’s judgment, (iii) does not contain clean bedding and bathroom towels available for the Guest’s use, or (iv) has vermin or contains pets not disclosed on the Listing.
+    </div>
+    <br>
+
+    <div class="terms details">
+        Provided that the above does not occur, the seller will recieve the amount of {{ transaction.amount }} in {{ transaction.currency }} on the date {{ transaction.date.strftime('%Y-%m-%d') }}. 
+    </div> 
+
+    <br>
+    {% if payer_seller == "Seller" and transaction.status == "pending approval from seller" %}
+        <form action="/dashboard" method="POST">
+            <label><br>
+                Agree <input type="checkbox" name="agree_or_disagree" value="agree"><br>
+                Disagree <input type="checkbox" name="agree_or_disagree" value="disagree">
+            </label>
+            <input type="submit" value="Submit" class="btn">
+        </form>
+    {% endif %}
+</div>
+{% endblock %}

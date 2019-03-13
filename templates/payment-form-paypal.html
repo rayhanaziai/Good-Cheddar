@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form action="/payment-processed" method="POST" id="payment-form">
+  <span class="payment-errors"></span>
+
+  <!-- Make into a dropdown -->
+  <div class="form-row">
+    <label>
+      <span>Card Type</span>
+      <input type="text" size="20" name="cardtype" value="4242424242424242">
+    </label>
+  </div>
+
+  <div class="form-row">
+    <label>
+      <span>Card Number</span>
+      <input type="text" size="20" name="cardnumber">
+    </label>
+  </div>
+
+  <div class="form-inline">
+    <label>
+      <span>Expiration (MM/YY)</span>
+      <input type="text" size="2" name="expirymonth">
+    </label>
+    <span> / </span>
+    <input type="text" size="2" name="expiryyear">
+  </div>
+
+  <div class="form-row">
+    <label>
+      <span>CVC</span>
+      <input type="text" size="4" name="cvc">
+    </label>
+  </div>
+
+
+  <input type="submit" class="submit" value="Submit Payment">
+</form>
+
+{% endblock %}

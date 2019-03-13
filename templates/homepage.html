@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Good Cheddar</title>
+    <!-- <link href = "bootstraplink.css" rel="stylesheet"> -->
+
+    <link rel="stylesheet" 
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link href = "/static/style.css" rel = "stylesheet">
+    <script src = "https://code.jquery.com/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+</head>
+
+<body class="homepage-body">
+
+<div class="homepage-container"> 
+  <nav class="navbar navbar-default">
+          <div class="container-fluid">
+              <div class="navbar-header">
+                  <a id="nav-title" class="navbar-brand xyz" href='/'>GOOD CHEDDAR</a>
+              </div>
+              <div id="navbar">
+                  <ul class="nav navbar-nav navbar-right xyz">
+                      <li><a href="/">Home</a></li>
+                      {% if "user_id" in session %}
+                          <li><a href="/dashboard">Dashboard</a></li>
+                      {% else %}
+                          <li><a href="/login">Dashboard</a></li>
+                      {% endif %}
+                      {% if "user_id" in session %}
+                          <li><a href="/logout">Logout</a></li>
+                      {% else %}
+                          <li><a href="/login">Login</a></li>
+                      {% endif %}
+                  </ul>
+              </div>
+          </div>
+  </nav>
+
+  {% for flash in get_flashed_messages() %}
+    {{ flash }}
+  {% endfor %}
+
+
+  <div class="container-fluid1">
+    <div id="main-title">
+      <h1>SAFE AND SECURE PAYMENTS FOR ALL YOUR ONLINE AND GLOBAL TRANSACTIONS.</h1>
+      <br>
+      <form action="/login">
+        <input type="submit" id="homepage-button" value="Get Started!" />
+      </form>
+    </div>
+</div> 
+<br><br>
+
+<div class="row">
+  <div class="col-xs-4">
+    <div class="inner-col inner-col1">
+    <h3>1. Create a Contract</h3>
+    <img src="/static/contract.png" class="homepage-images">
+  </div></div>
+  <div class="col-xs-4">
+    <div class="inner-col inner-col2">
+    <h3>2. Share and Negotiate</h3>
+    <img src="/static/exchange-arrows.png" class="homepage-images">
+    </div></div>
+  <div class="col-xs-4">
+    <div class="inner-col inner-col3">
+    <h3>3. Transfer of Funds</h3>
+    <img src="/static/coin.png" class="homepage-images">
+  </div></div>
+</div>
+<br><br>
+</div>
+</body>
+</html>

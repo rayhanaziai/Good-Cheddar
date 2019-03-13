@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Good Cheddar</title>
+    <!-- <link href = "bootstraplink.css" rel="stylesheet"> -->
+
+    <link rel="stylesheet" 
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+          
+    <link href = "/static/style.css" rel = "stylesheet">
+    <script src = "https://code.jquery.com/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+</head>
+<body = class="everything-body">
+    
+
+<nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a id="nav-title" class="navbar-brand xyz" href='/'>GOOD CHEDDAR</a>
+            </div>
+            <div id="navbar">
+                <ul class="nav navbar-nav navbar-right xyz">
+                    <li><a href="/">Home</a></li>
+                    {% if "user_id" in session %}
+                        <li><a href="/dashboard">Dashboard</a></li>
+                    {% else %}
+                        <li><a href="/login">Dashboard</a></li>
+                    {% endif %}
+                    {% if "user_id" in session %}
+                        <li><a href="/logout">Logout</a></li>
+                    {% else %}
+                        <li><a href="/login">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+</nav>
+
+
+{% for flash in get_flashed_messages() %}
+  {{ flash }}
+{% endfor %}
+
+{% block content %}
+    Put your body here.
+{% endblock %}
+
+
+
+</body>
+</html>

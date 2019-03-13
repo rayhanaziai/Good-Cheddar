@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div id="uncomplete-contract" class="transaction-form">
+    <div id="terms">
+        <h1>Your contract</h1><br> 
+
+        The 'payer' will agree to pay the amount agreed below to Easy Pay who will hold the funds until the agreed date below, on which date the funds will be transferred to the 'seller'. <br><br>
+
+        However, on the occasion  where the following occurs, the funds will be returned to the 'payer' as long as Easy Pay has been notified 24 hours before the agreed payment date below.<br><br>
+
+        (a) the Host of the Accommodation (i) cancels a reservation shortly before the scheduled start of the reservation, or (ii) fails to provide the Guest with the reasonable ability to access the Accommodation.<br><br>
+        (b) the description of the Accommodation in the Listing is materially inaccurate with respect to: <br>
+        (i) the size of the Accommodation, 
+        (ii) whether the reservation for the Accommodation is for a private room or shared room, and whether another party, including the Host, is staying at the Accommodation during the reservation, 
+        (iii) special amenities or features represented in the Listing are not provided or do not function, such as decks, pools, hot tubs, bathrooms, kitchen, and electrical, heating or air condition systems, or 
+        (iv) the physical location of the Accommodation (proximity). <br><br>
+        (c) at the start of the Guest’s reservation, the Accommodation: (i) is not generally clean and sanitary (ii) contains safety or health hazards that would be reasonably expected to adversely affect the Guest’s stay at the Accommodation in Easy Pay’s judgment, (iii) does not contain clean bedding and bathroom towels available for the Guest’s use, or (iv) has vermin or contains pets not disclosed on the Listing.
+    </div>
+    <br>
+
+    <form action="/terms" method="POST">
+        Please fill out the details of payment below:<br><br>
+        <div class="transaction-inputs details">
+            <label>Payment date (seller to recieve funds)<br>
+                <input type="date" name="date">
+            </label><br>
+            <label>Amount:<br>
+                <input type="number" name ="amount" min="0.01" step="0.01" max="2500" value="1000">
+            </label><br>
+            <label>Currency<br>
+                <input type="text" name="currency" value='USD'>
+            </label>    
+        </div><br>
+        <div class='transaction-inputs seller'>
+            <label>Send for approval to:<br><br>
+              <label>Recipient name<br>
+                    <input type="text" name="seller_name">
+                </label><br>
+                <label>Recipient email<br>
+                    <input type="email" name="seller_email">
+                </label>
+            </label><br>
+            <input type="submit" value="Approve Form" class="button">
+
+        </div>    
+
+    </form>
+
+</div>
+
+{% endblock %}

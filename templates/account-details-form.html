@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Transaction: {{ transaction_id }}</h2>
+
+<form action="/accounts/{{ transaction_id }}" method="POST" id="accounts-form" class="form">
+
+  <div class="form-row">
+    <label>
+      <span>Account Holder Name</span>
+      <input type="text" name='name' value='Sam Smith'>
+    </label>
+  </div>
+
+  <div class="form-row">
+    <label>
+      <span>Routing Number</span>
+      <input type="text" size="9" name="routing-number" value='110000000'>
+    </label>
+  </div>
+
+  <div class="form-row">
+    <label>
+      <span>Account Number</span>
+      <input type="text" size="12" name="account-number" value='000123456789'>
+    </label>
+  </div>
+
+
+  <input type="submit" class="submit button" value="Submit Account details">
+</form>
+
+
+
+{% endblock %}
