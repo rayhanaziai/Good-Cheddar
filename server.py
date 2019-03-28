@@ -31,7 +31,7 @@ def login_required(handler):
             return handler(user_id, *a, **kw)
         else:
             return redirect('/')
-    fn.func_name = handler.func_name
+    fn.__name__ = handler.__name__
     return fn
 
 
@@ -52,30 +52,28 @@ def register_process():
     """Process registration."""
 
     # Get form variables
-    print 'heheheh'
     fullname = request.form.get("fullname")
     email = request.form.get("email")
+    phone_number = request.form.get("phone_number")
     password = request.form.get("password")
-    payer_seller = request.form.get("payer_or_receiver")
-    print 'HERE'
+    # payer_seller = request.form.get("payer_or_receiver")
     password = password_hash(password)
-
     # check to see if user already exists. If so, update their details.
     if User.fetch_by_email(email) is None:
-        current_user = User.add(fullname, email, password, payer_seller)
+        current_user = User.add(fullname, email, phone_number, password)
 
     else:
         current_user = User.fetch_by_email(email)
         current_user.fullname = fullname
+        current_user.phone_number = phone_number
         current_user.password = password
-        current_user.payer_seller = payer_seller
 
     db.session.commit()
 
     flash("User %s added." % fullname)
 
     session["user_id"] = current_user.user_id
-    session["payer_seller"] = current_user.payer_seller
+    # session["payer_seller"] = current_user.payer_seller
     return redirect("/dashboard")
 
 
@@ -107,7 +105,7 @@ def login_process():
         return redirect("/login")
 
     session["user_id"] = user.user_id
-    session["payer_seller"] = user.payer_seller
+    # session["payer_seller"] = user.payer_seller
 
     flash("Logged in")
     return redirect("/dashboard")
@@ -118,7 +116,6 @@ def logout():
     """Log out."""
 
     del session["user_id"]
-    del session["payer_seller"]
     flash("Logged Out.")
     return redirect("/")
 
@@ -130,21 +127,25 @@ def status(user_id):
 
     if user_id == session["user_id"]:
         user = User.fetch(user_id)
-        payer_seller = session['payer_seller']
+        payer_seller = "payer"
 
-        if user.payer_seller == "Payer":
-            transaction_filter = Transaction.payer_id == user_id
-        else:
-            transaction_filter = Transaction.seller_id == user_id
+        transaction_payer_filter = Transaction.payer_id == user_id
+        transaction_seller_filter = Transaction.seller_id == user_id
+        # transactions.payer_id = :payer_id_1 
 
         completed_transactions = Transaction.query.filter(
-            transaction_filter, Transaction.status == "completed").all()
+            transaction_payer_filter,
+            transaction_seller_filter,
+            Transaction.status == "completed"
+        ).all()
 
         pending_transactions = Transaction.query.filter(
-            transaction_filter, Transaction.status != "completed").all()
+            transaction_payer_filter,
+            transaction_seller_filter,
+            Transaction.status != "completed",
+        ).all()
 
         return render_template("userpage.html",
-                               payer_seller=payer_seller,
                                user=user,
                                completed_transactions=completed_transactions,
                                pending_transactions=pending_transactions)
@@ -167,10 +168,10 @@ def process_acceptance(user_id):
 
     if acceptance == "agree":
         current_transaction.status = "awaiting payment from payer"
-        html = "<html><h2>Easy Pay</h2><br><p>Hi " + payer_user.fullname \
+        html = "<html><h2>Good Cheddar</h2><br><p>Hi " + payer_user.fullname \
                + ",</p><br>" + seller_user.fullname + " has approved your contract." \
                + "Please<a href='http://localhost:8088/login'><span> log in </span>" \
-               + "</a>to make your payment to Easy Pay.<br><br> From the Easy Pay team!</html>"
+               + "</a>to make your payment to Good Cheddar.<br><br> From the Good Cheddar team!</html>"
 
         # for test purposes, the same buyer email will be used. when live, use '"to": payer_user.email'
 
@@ -210,8 +211,8 @@ def approval_process(user_id):
     date = request.form.get("date")
     amount = request.form.get("amount")
     currency = request.form.get("currency")
-    print 'DATE:', date
-    print type(date)
+    print ('DATE:', date)
+    print (type(date))
     date = datetime.datetime.strptime(date, "%Y-%m-%d")
 
     # The recipient is added to the database
@@ -232,11 +233,11 @@ def approval_process(user_id):
     payer_name = payer.fullname
     # An email is sent to the seller to log in and view the contract
 
-    html = "<html><h2>Easy Pay</h2><br><p>Hi " + seller_name \
-        + ",</p><br>" + payer_name + " would like to send you money via Easy Pay. \
+    html = "<html><h2>Good Cheddar</h2><br><p>Hi " + seller_name \
+        + ",</p><br>" + payer_name + " would like to send you money via Good Cheddar. \
         <br> Please<a href='http://localhost:8088/login'><span> log in </span></a>\
         to view and accept the contract:<br>Password: " + str(original_password) \
-        + "<br><br> From the Easy Pay team!</html>"
+        + "<br><br> From the Good Cheddar team!</html>"
 
     # for test purposes, the same seller email will be used. when live, use '"to": seller_email'
     requests.post(
@@ -244,7 +245,7 @@ def approval_process(user_id):
         auth=('api', mailgun_key),
         data={"from": "rayhana.z@hotmail.com",
               "to": seller_email,
-              "subject": "Log in to Easy Pay",
+              "subject": "Log in to Good Cheddar",
               "html": html})
 
     # The new transaction is created in the database
@@ -323,7 +324,7 @@ def payment_process(transaction_id):
                 agreed amount of funds to Good Cheddar. \
                 <br> To get paid on the scheduled date, please log in to your \
                 Good Cheddar account and enter your account details.\
-                <br><br> From the Easy Pay team!</html>"
+                <br><br> From the Good Cheddar team!</html>"
 
             # for test purposes, the same seller email will be used. when live, use '"to": seller_email'
             requests.post(
@@ -331,14 +332,14 @@ def payment_process(transaction_id):
                 auth=('api', mailgun_key),
                 data={"from": "rayhana.z@hotmail.com",
                       "to": seller_email,
-                      "subject": "Log in to Easy Pay",
+                      "subject": "Log in to Good Cheddar",
                       "html": html})
 
         except stripe.InvalidRequestError as e:
             flash(e.message)
             # send email to seller telling them to put their details in stripe
 
-    print "***the token is", token
+    print ("***the token is", token)
     return redirect("/dashboard")
 
 
@@ -377,7 +378,7 @@ if __name__ == "__main__":
     # that we invoke the DebugToolbarExtension
     app.debug = False
 
-    connect_to_db(app, "postgresql:///easypay")
+    connect_to_db(app, "postgresql:///goodcheddar")
 
     # Use the DebugToolbar
     DebugToolbarExtension(app)

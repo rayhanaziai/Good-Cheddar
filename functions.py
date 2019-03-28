@@ -2,18 +2,24 @@ from model import db, User, Transaction, connect_to_db
 from flask_sqlalchemy import SQLAlchemy
 import stripe
 from flask import Flask
-from flask_bcrypt import Bcrypt
+# from flask_bcrypt import Bcrypt
+import bcrypt
 
-bcrypt_app = Flask(__name__)
-bcrypt = Bcrypt(bcrypt_app)
+# bcrypt_app = Flask(__name__)
+# bcrypt = Bcrypt(bcrypt_app)
 
 
 def password_hash(password):
-    return bcrypt.generate_password_hash(password)
+    password = str.encode(password)
+    hashed_pw = bcrypt.hashpw(password, bcrypt.gensalt())
+    # We return the unicode version of the hash so that it goes into th db okay. 
+    return hashed_pw.decode("utf-8")
 
 
-def check_password(pw_hash, password):
-    return bcrypt.check_password_hash(pw_hash, password)
+def check_password(hashed, password):
+    password = str.encode(password)
+    hashed = str.encode(hashed)
+    return bcrypt.checkpw(password, hashed)
 
 
 def create_charge(amount, token, description):
@@ -70,6 +76,6 @@ if __name__ == "__main__":
     # directly.
 
     from server import app
-    connect_to_db(app, "postgresql:///easypay")
-    print "Connected to DB."
+    connect_to_db(app, "postgresql:///goodcheddar")
+    print ("Connected to DB.")
 

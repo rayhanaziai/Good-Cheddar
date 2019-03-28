@@ -16,10 +16,11 @@ class User(db.Model):
                         primary_key=True)
     fullname = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(64), nullable=False)
-    password = db.Column(db.String(64), nullable=False)
+    phone_number = db.Column(db.String(10), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
     account_id = db.Column(db.String(300), nullable=True)
     secret_key = db.Column(db.String(300), nullable=True)
-    payer_seller = db.Column(db.String(20), nullable=False)
+    # payer_seller = db.Column(db.String(20), nullable=False)
 
     # transaction = db.relationship("Transaction",
     #                               backref=db.backref("users", order_by=user_id))
@@ -34,11 +35,11 @@ class User(db.Model):
         return cls.query.get(user_id)
 
     @classmethod
-    def add(cls, fullname, email, password, payer_seller):
+    def add(cls, fullname, email, phone_number, password):
         new_user = User(fullname=fullname,
                         email=email,
-                        password=password,
-                        payer_seller=payer_seller)
+                        phone_number=phone_number,
+                        password=password)
 
         db.session.add(new_user)
         db.session.commit()
@@ -123,6 +124,6 @@ if __name__ == "__main__":
     # directly.
 
     from server import app
-    connect_to_db(app, "postgresql:///easypay")
-    print "Connected to DB."
+    connect_to_db(app, "postgresql:///goodcheddar")
+    print ("Connected to DB.")
 

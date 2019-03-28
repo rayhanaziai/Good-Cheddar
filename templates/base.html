@@ -5,40 +5,45 @@
     <title>Good Cheddar</title>
     <!-- <link href = "bootstraplink.css" rel="stylesheet"> -->
 
-    <link rel="stylesheet" 
-          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-          
+    <<!-- link rel="stylesheet" 
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">     
     <link href = "/static/style.css" rel = "stylesheet">
     <script src = "https://code.jquery.com/jquery.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat|Alegreya|Alegreya+Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
 </head>
-<body = class="everything-body">
+<body>
     
-
-<nav class="navbar navbar-default">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a id="nav-title" class="navbar-brand xyz" href='/'>GOOD CHEDDAR</a>
-            </div>
-            <div id="navbar">
-                <ul class="nav navbar-nav navbar-right xyz">
-                    <li><a href="/">Home</a></li>
-                    {% if "user_id" in session %}
-                        <li><a href="/dashboard">Dashboard</a></li>
-                    {% else %}
-                        <li><a href="/login">Dashboard</a></li>
-                    {% endif %}
-                    {% if "user_id" in session %}
-                        <li><a href="/logout">Logout</a></li>
-                    {% else %}
-                        <li><a href="/login">Login</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
+<div>
+<nav class="navbar navbar-default sticky">
+          <div class="container-fluid">
+              <img class="brand" src='/static/logo-files/original-on-transparent.png' alt="Logo" href='/' height="110" width="110">
+              <div class="navbar-header">
+              <!--     <a id="nav-title" class="navbar-brand xyz" href='/'>Good Cheddar</a> -->
+              </div>
+              <div id="navbar">
+                  <ul class="nav navbar-nav navbar-right xyz">
+                      <li><a href="/">Home</a></li>
+                      {% if "user_id" in session %}
+                          <li><a href="/dashboard">Dashboard</a></li>
+                      {% else %}
+                          <li><a href="/login">Dashboard</a></li>
+                      {% endif %}
+                      {% if "user_id" in session %}
+                          <li><a href="/logout">Logout</a></li>
+                      {% else %}
+                          <li><a href="/login">Login</a></li>
+                      {% endif %}
+                  </ul>
+              </div>
+          </div>
 </nav>
-
+</div>
+<br><br><br>
+</body>
 
 {% for flash in get_flashed_messages() %}
   {{ flash }}

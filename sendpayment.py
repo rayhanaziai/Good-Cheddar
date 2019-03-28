@@ -28,6 +28,6 @@ if __name__ == "__main__":
     from server import app
     # app = Flask(__name__)
     connect_to_db(app)
-    print "Connected to DB."
+    print ("Connected to DB.")
 
     send_payments()

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <br>
-<div id ="well-{{ payer_seller }}" class="well spaced" style="width:97%">
+<div id ="well" class="well spaced" style="width:97%">
   
   <div class="container dashboard-container">
         <div class="row">
@@ -11,7 +11,6 @@
                     <div id="dashboard-intro">
                       <h1>Hi {{ user.fullname }}!</h1>
                       <h2>Welcome to your dashboard.</h2>
-                      <!-- <h3 id="{{ user.payer_seller }}">({{ user.payer_seller }})</h3> -->
                     </div>
                     <br>
                     </div>
@@ -22,11 +21,8 @@
                           <thead class="table-title">
                           <tr>
                             <th>Transaction ID</th>
-                            {% if user.payer_seller == "Payer" %}
-                              <th>Recipient</th> 
-                            {% elif user.payer_seller == "Seller" %}
-                              <th>Payer</th>
-                            {% endif %}  
+                            <th>Recipient</th> 
+                            <th>Payer</th> 
                             <th>Payment Date</th>
                             <th>Amount</th>
                             <th>Status</th>
@@ -127,11 +123,8 @@
                           <thead class="table-title">
                             <tr>
                               <th>Transaction ID</th>
-                              {% if user.payer_seller == "Payer" %}
-                                <th>Recipient</th> 
-                              {% elif user.payer_seller == "Seller" %}
-                                <th>Payer</th>
-                              {% endif %}
+                              <th>Recipient</th> 
+                              <th>Payer</th>
                               <th>Payment Date</th>
                               <th>Amount</th>
                               <th>Status</th>
@@ -178,9 +171,7 @@
                     <!-- <div id='create-trans'>
                       <a href="/terms" class="contract-button"><span>Create a transaction</span></a>
                     </div> -->
-                    {% if user.payer_seller == "Payer" %}
                     <button id="show-contract" class="button">Create a Transaction</button>
-                    {% endif %}
                     <br><br>
                 </div>
             </div>
