@@ -1,32 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
-<!-- <div class="form register">
-    <h1>Register</h1>
-    <p> Please enter the following details to register:</p>
-    <form action="/register" method="POST">
-        Full name: <input type="text" name="fullname"><br>
-        Email: <input type="text" name="email"><br>
-        Password: <input type="password" name="password"><br>
-        <div class="form-group">
-            <label>Are you a payer or a receiver?:<br>
-                Payer <input type="checkbox" name="payer_or_receiver" value="Payer"><br>
-                Receiver <input type="checkbox" name="payer_or_receiver" value="Seller">
-            </label>
-        </div>
-        <input type="submit" value="Submit" class="button">
-    </form>
-</div> -->
 
 <body class="everything-but-nav">
-      <!-- <h1>Elegant Contact Form.</h1> -->
-   <!-- <div class="info"><a href="https://www.grandvincent-marion.fr" target="_blank"><p> Made with <i class="fa fa-heart"></i> by Marion Grandvincent </p></a></div> -->
-  
   <form class="login-form" action="/register" method="POST">
         <h1 id=login-title>Register to get started.</h1>
         
     <div class="contentform">
         <div id="sendmessage"> You are successfully registered. Thank you. </div>
-
 
             <div class="login-container">
                   <div class="form-group">
@@ -56,44 +36,6 @@
                 <div class="validation"></div>
             </div>
     </div>
-
-<!--     <div class="rightcontact">  
-
-            <div class="form-group">
-            <p>City <span>*</span></p>
-            <span class="icon-case"><i class="fa fa-building-o"></i></span>
-                <input type="text" name="ville" id="ville" data-rule="required" data-msg="Vérifiez votre saisie sur les champs : Le champ 'Ville' doit être renseigné."/>
-                <div class="validation"></div>
-            </div>  
-
-            <div class="form-group">
-            <p>Phone number <span>*</span></p>  
-            <span class="icon-case"><i class="fa fa-phone"></i></span>
-                <input type="text" name="phone" id="phone" data-rule="maxlen:10" data-msg="Vérifiez votre saisie sur les champs : Le champ 'Téléphone' doit être renseigné. Minimum 10 chiffres"/>
-                <div class="validation"></div>
-            </div>
-
-            <div class="form-group">
-            <p>Function <span>*</span></p>
-            <span class="icon-case"><i class="fa fa-info"></i></span>
-                <input type="text" name="fonction" id="fonction" data-rule="required" data-msg="Vérifiez votre saisie sur les champs : Le champ 'Fonction' doit être renseigné."/>
-                <div class="validation"></div>
-            </div>
-
-            <div class="form-group">
-            <p>Subject <span>*</span></p>   
-            <span class="icon-case"><i class="fa fa-comment-o"></i></span>
-                <input type="text" name="sujet" id="sujet" data-rule="required" data-msg="Vérifiez votre saisie sur les champs : Le champ 'Sujet' doit être renseigné."/>
-                <div class="validation"></div>
-            </div>
-        
-            <div class="form-group">
-            <p>Message <span>*</span></p>
-            <span class="icon-case"><i class="fa fa-comments-o"></i></span>
-                <textarea name="message" rows="14" data-rule="required" data-msg="Vérifiez votre saisie sur les champs : Le champ 'Message' doit être renseigné."></textarea>
-                <div class="validation"></div>
-            </div>  
-    </div> -->
 <button type="submit" value="Submit" class="button-login">Register</button>
 Already have an account?<a href="/login"> Click here </a>to login!
 </div>

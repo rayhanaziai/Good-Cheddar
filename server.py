@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, flash, redirect, session, jso
 from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db, User, Transaction
 from functions import password_hash, check_password, create_charge, create_seller_account, create_seller_token, create_customer
+import json
 import requests
 import stripe
 import datetime
@@ -119,33 +120,37 @@ def logout():
     flash("Logged Out.")
     return redirect("/")
 
-
 @app.route("/dashboard", methods=['GET'])
 @login_required
-def status(user_id):
+def get_dashboard(user_id):
     """Show info about user."""
 
     if user_id == session["user_id"]:
         user = User.fetch(user_id)
-        payer_seller = "payer"
-
         transaction_payer_filter = Transaction.payer_id == user_id
         transaction_seller_filter = Transaction.seller_id == user_id
-        # transactions.payer_id = :payer_id_1 
 
-        completed_transactions = Transaction.query.filter(
+        completed_payer_transactions = Transaction.query.filter(
             transaction_payer_filter,
-            transaction_seller_filter,
-            Transaction.status == "completed"
+            Transaction.is_completed == True
         ).all()
+        completed_seller_transactions = Transaction.query.filter(
+            transaction_seller_filter,
+            Transaction.is_completed == True
+        ).all()
+        completed_transactions = completed_payer_transactions + completed_seller_transactions
 
-        pending_transactions = Transaction.query.filter(
+        pending_payer_transactions = Transaction.query.filter(
             transaction_payer_filter,
-            transaction_seller_filter,
-            Transaction.status != "completed",
+            Transaction.is_completed == False,
         ).all()
+        pending_seller_transactions = Transaction.query.filter(
+            transaction_seller_filter,
+            Transaction.is_completed == False,
+        ).all()
+        pending_transactions = pending_payer_transactions + pending_seller_transactions
 
-        return render_template("userpage.html",
+        return render_template("dashboard.html",
                                user=user,
                                completed_transactions=completed_transactions,
                                pending_transactions=pending_transactions)
@@ -201,56 +206,74 @@ def transaction_form(user_id):
 
 @app.route("/terms.json", methods=['POST'])
 @login_required
-def approval_process(user_id):
-    """Process approval."""
-    #FIX ME
+def process_new_transaction(user_id):
+    """Persist a new transaction into the DB"""
 
     # Get form variables
     seller_email = request.form.get("seller_email")
-    seller_name = request.form.get("seller_name")
-    date = request.form.get("date")
-    amount = request.form.get("amount")
-    currency = request.form.get("currency")
-    print ('DATE:', date)
-    print (type(date))
-    date = datetime.datetime.strptime(date, "%Y-%m-%d")
+    seller_fullname = request.form.get("seller_fullname")
+    payment_date = request.form.get("payment_date")
+    payment_amount = request.form.get("payment_amount")
+    product_details = request.form.get("product_details")
+    date = datetime.datetime.strptime(payment_date, "%Y-%m-%d")
 
     # The recipient is added to the database
     # password = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
     original_password = '0000'
     password = password_hash(original_password)
     if User.fetch_by_email(seller_email) is None:
-        User.add(seller_name, seller_email, password, "Seller")
-    else:
-        User.fetch_by_email(seller_email).payer_seller = "Seller"
-
+        User.add(
+            fullname=seller_fullname,
+            email=seller_email,
+            phone_number='',
+            password=password,
+        )
     db.session.commit()
 
     seller = User.fetch_by_email(seller_email)
     seller_id = seller.user_id
     payer_id = session['user_id']
     payer = User.fetch(payer_id)
-    payer_name = payer.fullname
+    payer_fullname = payer.fullname
     # An email is sent to the seller to log in and view the contract
-
-    html = "<html><h2>Good Cheddar</h2><br><p>Hi " + seller_name \
-        + ",</p><br>" + payer_name + " would like to send you money via Good Cheddar. \
+    html = "<html><h2>Good Cheddar</h2><br><p>Hi " + seller_fullname \
+        + ",</p><br>" + payer_fullname + " would like to send you money via Good Cheddar. \
         <br> Please<a href='http://localhost:8088/login'><span> log in </span></a>\
         to view and accept the contract:<br>Password: " + str(original_password) \
         + "<br><br> From the Good Cheddar team!</html>"
 
-    # for test purposes, the same seller email will be used. when live, use '"to": seller_email'
     requests.post(
         "https://api.mailgun.net/v3/sandbox9ba71cb39eb046f798ee4676ad972946.mailgun.org/messages",
         auth=('api', mailgun_key),
-        data={"from": "rayhana.z@hotmail.com",
+        data={"from": "goodcheddarinc@gmail.com",
               "to": seller_email,
-              "subject": "Log in to Good Cheddar",
+              "subject": "You have a payment pending",
               "html": html})
 
+    status_history = {
+        "status":
+            [
+                "waiting from approval from seller"
+            ]
+        }
     # The new transaction is created in the database
-    new_transaction = Transaction.add(payer_id, seller_id, False, False, date, amount, currency, "pending approval from seller")
-
+    new_transaction = Transaction.add(
+        payer_id=payer_id,
+        seller_id=seller_id,
+        payment_amount=float(payment_amount),
+        payment_currency="USD",
+        payment_date=date,
+        payment_is_approved=False,
+        product_images='',
+        product_details=product_details,
+        payment_is_made=False,
+        is_disputed=False,
+        dispute_images='',
+        dispute_details='',
+        status_history=json.dumps(status_history),
+        status="pending approval from recipient",
+        is_completed=False,
+    )
     date = date.strftime('%Y-%m-%d')
 
     flash("Approval prompt sent to the recipient")
@@ -259,8 +282,8 @@ def approval_process(user_id):
     return jsonify({'new_transaction_id': new_transaction.transaction_id,
                     'new_recipient': new_transaction.seller.fullname,
                     'new_date': date,
-                    'new_amount': amount,
-                    'new_status': "pending approval from seller",
+                    'new_amount': payment_amount,
+                    'new_status': "pending approval from recipient",
                     'new_action': 'No action'})
 
 

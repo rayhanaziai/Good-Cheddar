@@ -16,7 +16,7 @@ class User(db.Model):
                         primary_key=True)
     fullname = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(64), nullable=False)
-    phone_number = db.Column(db.String(10), nullable=False)
+    phone_number = db.Column(db.String(10), nullable=True)
     password = db.Column(db.String(100), nullable=False)
     account_id = db.Column(db.String(300), nullable=True)
     secret_key = db.Column(db.String(300), nullable=True)
@@ -64,13 +64,19 @@ class Transaction(db.Model):
                          db.ForeignKey('users.user_id'))
     seller_id = db.Column(db.Integer,
                           db.ForeignKey('users.user_id'))
-    charge_id = db.Column(db.String(300), nullable=True)
-    is_signed = db.Column(db.Boolean, nullable=False)
-    payment_received = db.Column(db.Boolean, nullable=True)
-    date = db.Column(db.DateTime, nullable=True)
-    amount = db.Column(db.Integer, nullable=True)
-    currency = db.Column(db.String(3), nullable=True)
-    status = db.Column(db.String(50), nullable=False)
+    payment_amount = db.Column(db.Float, nullable=False)
+    payment_currency = db.Column(db.String(3), nullable=True, default='USD')
+    payment_date = db.Column(db.DateTime, nullable=False)
+    payment_is_approved = db.Column(db.Boolean, nullable=False)
+    product_images = db.Column(db.String(500), nullable=True)
+    product_details = db.Column(db.String(300), nullable=False)
+    payment_is_made = db.Column(db.Boolean, nullable=False)
+    is_disputed = db.Column(db.Boolean, nullable=False)
+    dispute_images = db.Column(db.String(500), nullable=True)
+    dispute_details = db.Column(db.String(300), nullable=True)
+    status_history = db.Column(db.String(300), nullable=False)
+    status = db.Column(db.String(300), nullable=False)
+    is_completed = db.Column(db.Boolean, nullable=False)
 
     payer = db.relationship("User", foreign_keys=[payer_id])
     seller = db.relationship("User", foreign_keys=[seller_id])
@@ -78,30 +84,41 @@ class Transaction(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<Transaction transaction_id=%s is_signed=%s>" % (self.transaction_id,
-                                                                 self.is_signed)
+        return "<Transaction transaction_id=%s payment_appoved=%s>" % (self.transaction_id,
+                                                                 self.payment_is_approved)
     @classmethod
     def fetch(cls, user_id):
         return cls.query.get(user_id)
 
     @classmethod
-    def add(cls, payer_id, seller_id, is_signed, payment_received, date, amount, currency, status):
-        new_trans = Transaction(payer_id=payer_id,
-                                seller_id=seller_id,
-                                is_signed=is_signed,
-                                payment_received=payment_received,
-                                date=date,
-                                amount=amount,
-                                currency=currency,
-                                status=status)
-        db.session.add(new_trans)
+    def add(cls, payer_id, seller_id, payment_amount, payment_currency, payment_date,
+        payment_is_approved, product_images, product_details, payment_is_made, is_disputed,
+        dispute_images, dispute_details, status_history, status, is_completed):
+        new_transaction = Transaction(
+            payer_id=payer_id,
+            seller_id=seller_id,
+            payment_amount=payment_amount,
+            payment_currency=payment_currency,
+            payment_date=payment_date,
+            payment_is_approved=payment_is_approved,
+            product_images=product_images,
+            product_details=product_details,
+            payment_is_made=payment_is_made,
+            is_disputed=is_disputed,
+            dispute_images=dispute_images,
+            dispute_details=dispute_details,
+            status_history=status_history,
+            status=status,
+            is_completed=is_completed,
+        )
+        db.session.add(new_transaction)
         db.session.commit()
-        return new_trans
+        return new_transaction
 
     @classmethod
-    def new_status(cls, transaction_id, new):
+    def new_status(cls, transaction_id, new_status):
 
-        Transaction.query.get(transaction_id).status = new
+        Transaction.query.get(transaction_id).status = new_status
         db.session.commit()
 
 

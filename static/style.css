@@ -24,20 +24,20 @@ body {
 }
 
 #dashboard-title {
-    color: #D7CEC7;
+    color: #d7c16b;
     font-family: 'Alegreya', sans-serif;
     font-weight: 900;
     font-size:40px;
     text-align: center;
-    padding-top: 40px;
-    padding-bottom: 75px;
-    margin-right:25px;
+    padding-top: 30px;
+    padding-bottom: 20px;
 }
 
 #dashboard-intro {
   color: #D7CEC7;
   font-family: 'Alegreya', sans-serif;
   font-weight: 500;
+  padding-left: 16px;
 }
 
 .table-title {
@@ -47,16 +47,19 @@ body {
   margin: 0px 0px 0px 30px;
 }
 .dashboard-container{
-    background: rgba(16, 10, 4, 0.8);
-    height: 90%;
+    background: rgba(10, 39, 37, 0.8);
+/*    height: 100%;*/
     line-height: 1.3;
     /*position: fixed;*/
     /*height: 100%;*/
     top: 40px;
-    bottom: 40px;
+/*    bottom: 0px;*/
     left: 40px;
     right: 40px;
-    position:absolute;
+    position: static;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 40px;
 }
 
 .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
@@ -77,27 +80,27 @@ body {
     /*right: 0px;*/
 /*}*/
 
-.homepage-container{
+/*.homepage-container{
     background: rgba(16, 10, 4, 0.3)
 }
-
-.homepage-body {
+*/
+/*.homepage-body {
   background-size: cover;
   background-image: url(/static/padlock-background.jpg);
   background-attachment: fixed;
   position: relative;
-}
+}*/
 
-.homepage-images {
+/*.homepage-images {
   height: 60px;
   width: 60px;
-}
+}*/
 
 .col-xs-4 {
   text-align: center;
 }
 
-.homepage-explanation {
+h1.homepage-explanation {
   background-color: #112f33;
   padding: 50px;
   text-align: center;
@@ -316,8 +319,8 @@ section {
     margin-left:auto;
     margin-right:auto;
 
-    max-width: 500px;
-    background: #ece8e5;
+    max-width: 700px;
+    background: #eae5ce;
     padding: 30px 30px 20px 30px;
     box-shadow: rgba(187, 187, 187, 1) 0 0px 20px -1px;
     -webkit-box-shadow: rgba(187, 187, 187, 1) 0 0px 20px -1px;
@@ -360,7 +363,7 @@ section {
 }
 
 .table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th {
-   background-color: #e7d1bc;
+   background-color: #e2cd7496;
 }
 
 .table-striped > tbody > tr:nth-child(2n) > td, .table-striped > tbody > tr:nth-child(2n) > th {
@@ -483,6 +486,21 @@ i {
   font-size: 18px;
 }
 
+.leftcontact {
+  width:49.5%; 
+  float:left;
+  border-right: 1px dotted #CCC;
+  box-sizing: border-box;
+  padding: 0px 15px 0px 0px;
+}
+
+.rightcontact {
+  width:49.5%;
+  float:right;
+  box-sizing: border-box;
+  padding: 0px 0px 0px 15px;
+}
+
 .login-container {
   width:99%; 
   float:left;
@@ -515,4 +533,102 @@ i {
 
 #sendmessage.show,.show  {
   display:block;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  /*border-bottom: 1px dotted black;*/
+  opacity: 100;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #132f33;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  top: -5px;
+  left: 105%; 
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+
+
+
+
+/* Image upload styles*/
+.input-file-container {
+  position: relative;
+  width: 225px;
+} 
+.js .input-file-trigger {
+  display: block;
+  padding: 14px 45px;
+  background: #39D2B4;
+  color: #fff;
+  font-size: 1em;
+  transition: all .4s;
+  cursor: pointer;
+}
+.js .input-file {
+  position: absolute;
+  top: 0; left: 0;
+  width: 225px;
+  opacity: 0;
+  padding: 14px 0;
+  cursor: pointer;
+}
+.js .input-file:hover + .input-file-trigger,
+.js .input-file:focus + .input-file-trigger,
+.js .input-file-trigger:hover,
+.js .input-file-trigger:focus {
+  background: #34495E;
+  color: #39D2B4;
+}
+
+.file-return {
+  margin: 0;
+}
+.file-return:not(:empty) {
+  margin: 1em 0;
+}
+.js .file-return {
+  font-style: italic;
+  font-size: .9em;
+  font-weight: bold;
+}
+.js .file-return:not(:empty):before {
+  content: "Selected file: ";
+  font-style: normal;
+  font-weight: normal;
+}
+
+/* Useless styles, just for demo styles */
+
+
+h2 + P {
+  text-align: center;
+}
+.txtcenter {
+  margin-top: 4em;
+  font-size: .9em;
+  text-align: center;
+  color: #aaa;
+}
+.copy {
+  margin-top: 2em;
+}
+.copy a {
+  text-decoration: none;
+  color: #1ABC9C;
 }
