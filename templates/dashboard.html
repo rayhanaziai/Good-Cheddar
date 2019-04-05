@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+{% block content %}
+<body class="everything-but-nav">
+  <br>
+    <div class="dashboard-container">
+      <div class="col-xs-12 col-sm-12 col-md-12">
+        <h1 id="dashboard-title">DASHBOARD</h1>
+        <div id="dashboard-intro">
+          <h1>Hi {{ user.fullname }}!</h1>
+          <h2>Welcome to your dashboard.</h2>
+        </div>
+        <br>
+      </div>
+      <br>
+      <div class="table-title"><h3>Pending Transactions</h3></div>
+      <div class="table-pending">
+            <table id='pending-table' style="width:95%" class="transaction-table table table-striped">
+              <thead class="table-title">
+                <tr>
+                  <th>Transaction ID</th>
+                  <th>Recipient</th> 
+                  <th>Payer</th> 
+                  <th>Payment Date</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Progress</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if pending_transactions != [] %}
+                {% for transaction in pending_transactions %}
+                <tr>
+                  {% if transaction.status == "pending approval from recipient" and user.user_id == transaction.payer_id %}
+                  <th scope="row"><a href="/approved-form/{{ transaction.transaction_id }}" class="contract-button"><span>{{ transaction.transaction_id }}</span></a></th>
+                  {% elif transaction.status == "awaiting payment from payer" or transaction.status == "payment to seller scheduled" or transaction.status == "declined by seller" or transaction.status == "payment from payer received" %}
+                  <th scope='row'><a href="/approved-form/{{ transaction.transaction_id }}" class="contract-button"><span>{{ transaction.transaction_id }}</span></a></th>
+                  {% else %}
+                  <th scope="row">{{ transaction.transaction_id }}</th>
+                  {% endif %}
+                  {% if user.user_id == transaction.payer_id %}
+                  <td>{{ transaction.seller.fullname}}</td> 
+                  <td>You</td> 
+                  {% elif user.user_id == transaction.seller_id %}
+                  <td>You</td>
+                  <td>{{ transaction.payer.fullname}}</td> 
+                  {% endif %}
+                  <td>{{ transaction.payment_date.strftime('%Y-%m-%d') }}</td>
+                  <td>${{ transaction.payment_amount }}</td>
+                  {% if transaction.status == "payment from payer received" and user.user_id == transaction.payer_id %}
+                  <td>payment to seller scheduled</td>
+                  {% else %}
+                  <td>{{ transaction.status }}</td>
+                  {% endif %}
+                  <td>
+                    <div class="progress">
+                      {% if transaction.status == "pending approval from payer"%}
+                      <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                        0%
+                      </div>
+                      {% elif transaction.status == "pending approval from recipient" %}
+                      <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:25%">
+                        25%
+                      </div>
+                      {% elif transaction.status == "awaiting payment from payer" %}
+                      <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+                        50%
+                      </div>
+                      {% elif transaction.status == "payment from payer recieved" %}
+                      <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:75%">
+                        75%
+                      </div>
+                      {% elif transaction.status == "payment to seller scheduled" %}
+                      <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:75%">
+                        75%
+                      </div>
+                      {% elif transaction.status == "payment from payer received" %}
+                      <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:75%">
+                        75%
+                      </div>
+                      {% elif transaction.status == "declined by seller" %}
+                      <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                        0%
+                      </div>
+                      {% endif %}
+                    </div>
+                  </td>
+                  {% if transaction.status == "pending approval from payer" and user.user_id == transaction.payer_id %}
+                  <td><a href="/terms" class="contract-button button"><span>View Contract</span></a></td>
+                  {% elif transaction.status == "pending approval from recipient" and user.user_id == transaction.seller_id %}
+                  <td><a href="/approved-form/{{ transaction.transaction_id }}" class="contract-button button"><span>View and approve contract</span></a></td>
+                  {% elif transaction.status == "awaiting payment from payer" and user.user_id == transaction.payer_id %}
+                  <td><a href="/payment/{{ transaction.transaction_id }}" class="contract-button button"><span>Pay funds to Easy Pay</span></a></td>
+                  {% elif transaction.status == "declined by seller" and user.user_id == transaction.payer_id %}
+                  <td><button id="try-again" class="contract-button button">Edit contract once again!</button></td>
+                  {% elif transaction.status == "payment from payer received" and user.user_id == transaction.seller_id %}
+                  <td><a href="/accounts/{{ transaction.transaction_id }}" class="contract-button button"><span>Enter your account details</span></a></td>
+                  {% else %}
+                  <td>No action</td>
+                  {% endif %}
+                  </tr>
+                  {% endfor %}
+                  {% else %}
+                  <tr id='no_trans'>
+                    <td id="no_pending_trans">You currently have no pending transactions!</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                  </tr>
+                  {% endif %}
+              </tbody>
+            </table>
+      </div>
+      <br><br>
+      <div class="table-title"><h3>Completed Transactions</h3></div>
+      <div class="table-completed">
+        <table style="width:95%" class="transaction-table table table-striped">
+          <thead class="table-title">
+            <tr>
+              <th>Transaction ID</th>
+              <th>Recipient</th> 
+              <th>Payer</th>
+              <th>Payment Date</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if completed_transactions != [] %}
+            {% for transaction in completed_transactions %}
+            <tr>
+              <th scope="row"><a href="/approved-form/{{ transaction.transaction_id }}" class="contract-button"><span>{{ transaction.transaction_id }}</span></a></th>
+              {% if user.user_id == transaction.payer_id %}
+              <td>{{ transaction.seller.fullname }}</td> 
+              {% elif user.user_id == transaction.seller_id %}
+              <td>{{ transaction.payer.fullname }}</td>
+              {% endif %}
+              <td>{{ transaction.date.strftime('%Y-%m-%d') }}</td>
+              <td>${{ transaction.amount }}</td>
+              <td>
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                    100%
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <div id='no_completed_trans'>
+              <td>You have no completed transactions!</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </div>
+            {% endif %}
+          </tbody>
+
+        </table>
+      </div>
+      <br>
+                    <!-- <div id='create-trans'>
+                      <a href="/terms" class="contract-button"><span>Create a transaction</span></a>
+                    </div> -->
+      <button id="show-contract" class="button">Create a Transaction</button>
+      <br><br>
+    </div>
+
+<div id="uncomplete-contract" class="transaction-form">
+    <div id="terms">
+      <form action="/terms" method="POST">>
+        <h1>Your Transaction</h1>
+          <p>Please fill out the details of your transaction here. The more detail you use to explain the product or service you're paying for, the better!
+          </p>
+    <div class="contentform">
+        <div id="sendmessage">Your payment has been arranged.</div>
+
+
+        <div class="leftcontact">
+                  <div class="form-group">
+                    <p>Recipient name<span>*</span></p>
+                    <span class="icon-case"><i class="fa fa-user"></i></span>
+                        <input class="login-inputs" type="text" name="seller_fullname" id="fullname-field" data-rule="required" data-msg="The 'Recipient name' field must be completed."/>
+                <div class="validation"></div>
+       </div> 
+
+            <div class="form-group">
+            <p>Recipient email<span>*</span></p>
+            <span class="icon-case"><i class="fa fa-envelope"></i></span>
+                <input class="login-inputs" type="email" name="seller_email" id="email-field" data-rule="required" data-msg="The 'Recipient email' field must be completed."/>
+                <div class="validation"></div>
+            </div>
+
+            <div class="form-group">
+            <p>Payment amount<span>*</span></p>    
+            <span class="icon-case"><i class="fas fa-dollar-sign"></i></span>
+                <input class="login-inputs" type="number" name="payment_amount" value="1000.00" min="0.01" step="0.01" id="payment_amount-field" data-rule="required" data-msg="The 'Payment amount' field must be completed."/>
+                <div class="validation"></div>
+            </div>  
+
+            <div class="form-group">
+              <div class=tooltip><p>Payment date <i class="fas fa-info-circle"></i></p>
+                <span class="tooltiptext">the date you want the seller to recieve funds.</span><br>
+              </div>
+            <span class="icon-case"><i class="fas fa-calendar-day"></i></span>
+                <input class="login-inputs" type="date" name="payment_date" id="payment_date-field" data-rule="required" data-msg="The 'Payment date' field must be completed."></div>
+            </div>
+
+    <div class="rightcontact">  
+            <div class="form-group">
+            <p>Product/Service details <span>*</span></p>
+            <span class="icon-case"><i class="fas fa-shopping-bag"></i></span>
+              <textarea name="product_details" id="product_details-field" class="product_details"></textarea>
+                <div class="validation"></div>
+            </div>
+
+            <div class="form-group">
+            <p>Product images</p>
+            <div class="input-file-container">  
+              <input class="input-file" id="my-file" type="file">
+              <label tabindex="0" for="my-file" class="input-file-trigger">Select an image...</label>
+            </div>
+            <p class="file-return" type=product_images></p>
+            </div>
+    </div>
+    </div>
+<button type="submit" id='trans-submit' class="button-login" data-userid="{{ user.user_id }}">Complete</button>
+    
+</form> 
+
+
+
+
+    <!-- <form action="/terms" method="POST">
+        Please fill out the details of payment below:<br><br>
+        <div class="transaction-inputs details">
+            <label>
+              <div class=tooltip>Payment date
+                <span class="tooltiptext">the date you want the seller to recieve funds.</span><br>
+              </div>
+              <input type="date" name="date" id='date-field'>
+            </label>
+            <br>
+            <label>Amount:<br>
+                <input type="number" name ="amount" min="0.01" step="0.01" max="2500" value="1000" id='amount-field'>
+            </label><br>
+            <label>Currency<br>
+                <input type="text" name="currency" value='USD' id='currency-field'>
+            </label>    
+        </div><br>
+        <div class='transaction-inputs seller'>
+            <label>Send for approval to:<br><br>
+              <label>Recipient name<br>
+                    <input type="text" name="seller_name" id='name-field'>
+                </label><br>
+                <label>Recipient email<br>
+                    <input type="email" name="seller_email" id='email-field'>
+                </label>
+            </label><br>
+            <input type="submit" value="Approve Form" id='trans-submit' class="button" data-userid="{{ user.user_id }}">
+
+        </div>    
+
+    </form> -->
+
+</div>
+<!-- <div id='Test'>Test</div> -->
+<br><br><br>
+<script type="text/javascript">
+
+$("#uncomplete-contract").hide();
+
+function showContract(evt) {
+    $("#uncomplete-contract").show();
+    $('html,body').animate({
+        scrollTop: $("#uncomplete-contract").offset().top},
+        'slow');
+  };
+
+$(document).ready(function(){
+
+  $('#show-contract').on('click', showContract);
+  $('#try-again').on('click', showContract);
+
+});
+
+function updateTable(data) {
+  $('#no_trans').remove();
+
+  $('#pending-table').append("<tr><td><a href='/approved-form/'" + data.new_transaction_id + "class='contract-button'><span>" + data.new_transaction_id + "</span></a></td><td>" + data.new_recipient + "</td><td>" +"You" + "</td><td>" + data.new_date + "</td><td>$" + data.new_amount + "</td><td>" + data.new_status + "</td><td><div class='progress'><div class='progress-bar' role='progressbar' aria-valuenow='25' aria-valuemin='0' aria-valuemax='100' style='width:25%''>25%</div></div></td><td>"+ data.new_action + "</td></tr>");
+
+};
+
+// <a href='/approved-form/'" + data.new_transaction_id + "class='contract-button'><span>" + data.new_transaction_id + "</span></a>
+function processForm(evt) {
+  evt.preventDefault();
+
+  $("#uncomplete-contract").hide();
+  // $('#no_pending_trans').hide();
+  // $('#no_trans').remove();
+
+  var formInputs = {
+        "seller_fullname": $("#fullname-field").val(),
+        "seller_email": $("#email-field").val(),
+        "payment_date": $("#payment_date-field").val(),
+        "payment_amount": $("#payment_amount-field").val(),
+        "product_details": $("#product_details-field").val()
+    };
+
+  var user_id = $("#trans-submit").data("userid")
+
+  $.post("/terms.json", formInputs, updateTable);
+};
+
+$("#trans-submit").on('click', processForm);
+
+$(document).ready(function() {
+  var f = document.getElementById('Test');
+  setInterval(function() {
+    f.style.display = (f.style.display == 'none' ? '' : 'none');
+  }, 1000);
+});
+
+// image upload part of the form
+document.querySelector("html").classList.add('js');
+
+var fileInput  = document.querySelector( ".input-file" ),  
+    button     = document.querySelector( ".input-file-trigger" ),
+    the_return = document.querySelector(".file-return");
+      
+button.addEventListener( "keydown", function( event ) {  
+    if ( event.keyCode == 13 || event.keyCode == 32 ) {  
+        fileInput.focus();  
+    }  
+});
+button.addEventListener( "click", function( event ) {
+   fileInput.focus();
+   return false;
+});  
+fileInput.addEventListener( "change", function( event ) {  
+    the_return.innerHTML = this.value;  
+});  
+
+
+
+</script>
+</body>
+{% endblock %}
